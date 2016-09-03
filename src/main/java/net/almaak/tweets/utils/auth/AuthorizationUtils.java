@@ -8,9 +8,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by leiferksn on 9/1/16.
@@ -161,14 +159,14 @@ public class AuthorizationUtils {
 
         Map<String, String> resultMap = new HashMap<String, String>();
 
-        // TODO check for duplicates
+        // TODO check for duplicates?
         resultMap.putAll(prepareParametersForAssembling(authParameters));
         resultMap.putAll(prepareParametersForAssembling(requestParameters));
 
-        // TODO sort map
+        Map<String, String> sortedResultMap = sortResultMap(resultMap);
 
         StringBuffer buf = new StringBuffer();
-        for(Map.Entry<String, String> entry : resultMap.entrySet()) {
+        for(Map.Entry<String, String> entry : sortedResultMap.entrySet()) {
             buf.append(entry.getKey());
             buf.append("=");
             buf.append(entry.getValue());
@@ -180,11 +178,25 @@ public class AuthorizationUtils {
         return parameterString;
     }
 
-    public static String calculateRFC2104HMAC(String data, String key) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+    private static String calculateRFC2104HMAC(String data, String key) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
         SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA1_ALGORITHM);
         Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
         mac.init(signingKey);
         return convertByteArrayToHexString(mac.doFinal(data.getBytes()));
     }
+
+    private static Map<String,String> sortResultMap(final Map<String, String> resultMap) {
+        Map<String, String> sortedResultMap = new HashMap<String, String>();
+        List<String> keys = new ArrayList<String>();
+        keys.addAll(resultMap.keySet());
+        Collections.sort(keys);
+
+        for(String key : keys){
+            sortedResultMap.put(key, resultMap.get(key));
+        }
+        return sortedResultMap;
+    }
+
+
 
 }
