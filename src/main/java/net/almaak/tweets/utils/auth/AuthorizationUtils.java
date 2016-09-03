@@ -77,7 +77,7 @@ public class AuthorizationUtils {
             final String httpMethod,
             final String httpRequestBaseURL) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
 
-        Map<String, String> authParams = new HashMap<String, String>();
+        Map<String, String> authParams = new LinkedHashMap<String, String>();
         authParams.put("oauth_consumer_key", consumerKey);
         authParams.put("oauth_signature_method", OAUTH_SIGNATURE_METHOD);
         authParams.put("oauth_timestamp", Long.toString(System.currentTimeMillis()));
@@ -95,10 +95,9 @@ public class AuthorizationUtils {
                 requestParameters, httpMethod, httpRequestBaseURL);
 
         authParams.put("oauth_signature", oauthSignature);
-        return authParams;
+        Map<String, String> sortedAuthParams = sortResultMap(authParams);
+        return sortedAuthParams;
     }
-
-
 
     private static String createRequestSignature (
             final String accessTokenSecret,
@@ -186,7 +185,7 @@ public class AuthorizationUtils {
     }
 
     private static Map<String,String> sortResultMap(final Map<String, String> resultMap) {
-        Map<String, String> sortedResultMap = new HashMap<String, String>();
+        Map<String, String> sortedResultMap = new LinkedHashMap<String, String>();
         List<String> keys = new ArrayList<String>();
         keys.addAll(resultMap.keySet());
         Collections.sort(keys);
