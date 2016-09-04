@@ -1,17 +1,20 @@
 package net.almaak.tweets.utils.auth;
 
+import org.apache.commons.codec.binary.Base64;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.*;
 
 /**
  * Created by leiferksn on 9/1/16.
+ *
+ * Create authorization headers as defined in https://dev.twitter.com/oauth/overview/authorizing-requests
  */
 
 public class AuthorizationUtils {
@@ -22,7 +25,6 @@ public class AuthorizationUtils {
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
 
     /*
-
     For single user auth this should come into every request
 
     OAuth oauth_consumer_key="xvz1evFS4wEEPTGEFPHBog",
@@ -34,14 +36,15 @@ public class AuthorizationUtils {
               oauth_version="1.0"
      */
 
-    public static String generateSingleUserAuthorizationHeader (
+    public static String generateSingleUserAuthorizationHeader(
             final String consumerKey,
             final String consumerSecret,
             final String accessToken,
             final String accessTokenSecret,
             final Map<String, String> requestParameters,
             final String httpMethod,
-            final String httpRequestBaseURL) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
+            final String httpRequestBaseURL,
+            final Long serverTimeOffset) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
 
         Map<String, String> authParameters = createAuthParamaters(consumerKey,
                 consumerSecret,
@@ -49,7 +52,7 @@ public class AuthorizationUtils {
                 accessTokenSecret,
                 requestParameters,
                 httpMethod,
-                httpRequestBaseURL);
+                httpRequestBaseURL, serverTimeOffset);
 
         StringBuffer headerBuf = new StringBuffer();
         headerBuf.append("OAuth ");
@@ -64,31 +67,31 @@ public class AuthorizationUtils {
 
         String headerValue = headerBuf.toString();
         int i = headerValue.lastIndexOf("\", ");
-        headerValue = headerValue.substring(0, i);
+        headerValue = headerValue.substring(0, i + 1);
         return headerValue;
     }
 
-    private static Map<String, String> createAuthParamaters (
+    private static Map<String, String> createAuthParamaters(
             final String consumerKey,
             final String consumerSecret,
             final String accessToken,
             final String accessTokenSecret,
             final Map<String, String> requestParameters,
             final String httpMethod,
-            final String httpRequestBaseURL) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
+            final String httpRequestBaseURL, Long serverTimeOffset) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
 
         Map<String, String> authParams = new LinkedHashMap<String, String>();
         authParams.put("oauth_consumer_key", consumerKey);
-        authParams.put("oauth_signature_method", OAUTH_SIGNATURE_METHOD);
-        authParams.put("oauth_timestamp", Long.toString(System.currentTimeMillis()));
-        authParams.put("oauth_token", accessToken);
-        authParams.put("oauth_version", OAUTH_VERSION);
-
         byte[] randomBytes = new byte[32];
         new Random().nextBytes(randomBytes);
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] md5Bytes = md.digest(randomBytes);
-        authParams.put("oauth_nonce", convertByteArrayToHexString(md5Bytes));
+        authParams.put("oauth_nonce", Base64.encodeBase64String(randomBytes));
+        authParams.put("oauth_signature_method", OAUTH_SIGNATURE_METHOD);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+        cal.getTimeInMillis();
+        authParams.put("oauth_timestamp", Long.toString(cal.getTimeInMillis() + serverTimeOffset));
+        authParams.put("oauth_token", accessToken);
+        authParams.put("oauth_version", OAUTH_VERSION);
         String oauthSignature = createRequestSignature(accessTokenSecret,
                 consumerSecret,
                 authParams,
@@ -113,7 +116,7 @@ public class AuthorizationUtils {
         buf.append("&");
         buf.append(URLEncoder.encode(httpRequestBaseURL, URL_ENCODE_CHARSET));
         buf.append("&");
-        buf.append(parameterString);
+        buf.append(URLEncoder.encode(parameterString, URL_ENCODE_CHARSET));
 
         String signatureBaseString = buf.toString();
 
@@ -123,7 +126,8 @@ public class AuthorizationUtils {
         signingKeyBuf.append(URLEncoder.encode(accessTokenSecret, URL_ENCODE_CHARSET));
         String signingKey = signingKeyBuf.toString();
 
-        return calculateRFC2104HMAC(signatureBaseString, signingKey);
+        String hmacSignature = calculateRFC2104HMAC(signatureBaseString, signingKey);
+        return new String(Base64.encodeBase64(hmacSignature.getBytes()));
     }
 
     private static String convertByteArrayToHexString(byte[] bytes){
