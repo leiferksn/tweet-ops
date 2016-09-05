@@ -1,15 +1,13 @@
 package net.almaak.tweets.utils;
 
-import sun.net.www.protocol.http.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by leiferksn on 9/5/16.
@@ -26,13 +24,9 @@ public class TimeUtils {
         List<String> dateValue = headerFileds.get("date");
         if(dateValue != null) {
             // Sun, 04 Sep 2016 21:47:14 GMT
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
             Date d = sdf.parse(dateValue.get(0));
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeZone(TimeZone.getTimeZone("-02:00"));
-            cal.setTime(d);
-            timeOffset = System.currentTimeMillis() - cal.getTimeInMillis();
+            timeOffset = System.currentTimeMillis() - d.getTime();
         } else {
             // TODO: make specific exception
             con = null;

@@ -126,8 +126,8 @@ public class AuthorizationUtils {
         signingKeyBuf.append(URLEncoder.encode(accessTokenSecret, URL_ENCODE_CHARSET));
         String signingKey = signingKeyBuf.toString();
 
-        String hmacSignature = calculateRFC2104HMAC(signatureBaseString, signingKey);
-        return new String(Base64.encodeBase64(hmacSignature.getBytes()));
+        byte[] hmacSignature = calculateRFC2104HMAC(signatureBaseString, signingKey);
+        return URLEncoder.encode(new String(Base64.encodeBase64(hmacSignature)), URL_ENCODE_CHARSET);
     }
 
     private static String convertByteArrayToHexString(byte[] bytes){
@@ -181,11 +181,11 @@ public class AuthorizationUtils {
         return parameterString;
     }
 
-    private static String calculateRFC2104HMAC(String data, String key) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+    private static byte[] calculateRFC2104HMAC(String data, String key) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
         SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA1_ALGORITHM);
         Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
         mac.init(signingKey);
-        return convertByteArrayToHexString(mac.doFinal(data.getBytes()));
+        return mac.doFinal(data.getBytes());
     }
 
     private static Map<String,String> sortResultMap(final Map<String, String> resultMap) {
