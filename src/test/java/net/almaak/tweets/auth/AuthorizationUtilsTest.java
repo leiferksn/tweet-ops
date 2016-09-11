@@ -17,7 +17,7 @@ import java.util.Map;
  * Created by leiferksn on 9/1/16.
  *
  * The test checks if the oauth signature is valid based on the user's authorization data.
- * Using the service provided by http://term.ie/.
+ * Using the OAuth test server provided by http://term.ie/.
  *
  */
 
