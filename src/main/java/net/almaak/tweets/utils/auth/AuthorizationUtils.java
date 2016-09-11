@@ -89,9 +89,7 @@ public class AuthorizationUtils {
         authParams.put("oauth_nonce", nonce);
         authParams.put("oauth_signature_method", OAUTH_SIGNATURE_METHOD);
         Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
-        cal.getTimeInMillis();
-        authParams.put("oauth_timestamp", Long.toString(cal.getTimeInMillis() + serverTimeOffset));
+        authParams.put("oauth_timestamp", Long.toString((cal.getTimeInMillis() + serverTimeOffset)/1000));
         authParams.put("oauth_token", accessToken);
         authParams.put("oauth_version", OAUTH_VERSION);
         String oauthSignature = createRequestSignature(accessTokenSecret,
