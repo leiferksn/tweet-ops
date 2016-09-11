@@ -84,7 +84,9 @@ public class AuthorizationUtils {
         authParams.put("oauth_consumer_key", consumerKey);
         byte[] randomBytes = new byte[32];
         new Random().nextBytes(randomBytes);
-        authParams.put("oauth_nonce", Base64.encodeBase64String(randomBytes));
+        String nonce = Base64.encodeBase64String(randomBytes);
+        nonce = nonce.replaceAll("[^\\p{L}\\p{Nd}]+", "");
+        authParams.put("oauth_nonce", nonce);
         authParams.put("oauth_signature_method", OAUTH_SIGNATURE_METHOD);
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -127,7 +129,7 @@ public class AuthorizationUtils {
         String signingKey = signingKeyBuf.toString();
 
         byte[] hmacSignature = calculateRFC2104HMAC(signatureBaseString, signingKey);
-        return URLEncoder.encode(new String(Base64.encodeBase64(hmacSignature)), URL_ENCODE_CHARSET);
+        return new String(Base64.encodeBase64(hmacSignature));
     }
 
     private static String convertByteArrayToHexString(byte[] bytes){
