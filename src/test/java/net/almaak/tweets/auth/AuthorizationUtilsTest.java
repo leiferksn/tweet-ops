@@ -4,6 +4,7 @@ import net.almaak.tweets.utils.TimeUtils;
 import net.almaak.tweets.utils.auth.AuthorizationUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -68,8 +69,9 @@ public class AuthorizationUtilsTest {
         return urlBuf.toString();
     }
 
+
     @Test
-    public void shouldReturnResponseFromTwitter() throws Exception {
+    public void shouldReturnValidResponseFromTestServer() throws Exception {
         String authorizationHeader = AuthorizationUtils.generateSingleUserAuthorizationHeader(CONSUMER_KEY,
                 CONSUMER_SECRET,
                 ACCESS_TOKEN,
