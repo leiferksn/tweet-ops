@@ -1,5 +1,5 @@
 ## tweet-ops
-Basically trying out operations available in the Twitter API as partof a JAVA console application. 
+Basically trying out operations available in the Twitter API in a JAVA console application. 
 
 #### First stage...
 
