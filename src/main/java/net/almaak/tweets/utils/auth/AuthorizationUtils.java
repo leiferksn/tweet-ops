@@ -38,11 +38,7 @@ public class AuthorizationUtils {
      */
 
     public static String generateSingleUserAuthorizationHeader(
-            final Map<String, String> requestParameters,
-            final String httpMethod,
-            final String httpRequestBaseURL,
-            final Long serverTimeOffset,
-            final AuthConfiguration authConfiguration) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
+            final String httpMethod, final String httpRequestBaseURL, final Long serverTimeOffset, final AuthConfiguration authConfiguration, final Map<String, String> requestParameters) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
 
         Map<String, String> authParameters = createAuthParamaters(
                 requestParameters,
@@ -134,9 +130,11 @@ public class AuthorizationUtils {
     private static Map<String, String> prepareParametersForAssembling(final Map<String, String> parameters) throws  UnsupportedEncodingException {
         Map<String, String> m = new HashMap<String, String>();
 
-        for(Map.Entry<String, String> entry : parameters.entrySet()) {
-            m.put(URLEncoder.encode(entry.getKey(), URL_ENCODE_CHARSET),
-                    URLEncoder.encode(entry.getValue(), URL_ENCODE_CHARSET));
+        if(parameters != null) {
+            for(Map.Entry<String, String> entry : parameters.entrySet()) {
+                m.put(URLEncoder.encode(entry.getKey(), URL_ENCODE_CHARSET),
+                        URLEncoder.encode(entry.getValue(), URL_ENCODE_CHARSET));
+            }
         }
         return m;
     }

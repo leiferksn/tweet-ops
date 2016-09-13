@@ -39,9 +39,8 @@ public class AuthorizationUtilsTest {
     @Test
     public void shouldCreateValidAuthorizationHeader() throws Exception {
     String authorizationHeader = AuthorizationUtils.generateSingleUserAuthorizationHeader(
-            requestParameters,
-            HTTP_METHOD_GET,
-            httpRequestBaseURL, TimeUtils.retrieveTimeOffsetToServer(), AuthConfiguration.getInstance());
+            HTTP_METHOD_GET, httpRequestBaseURL, TimeUtils.retrieveTimeOffsetToServer(), AuthConfiguration.getInstance(), requestParameters
+    );
 
         Assert.assertNotNull(authorizationHeader);
     }
@@ -66,9 +65,8 @@ public class AuthorizationUtilsTest {
     @Test
     public void shouldReturnValidResponseFromTestServer() throws Exception {
         String authorizationHeader = AuthorizationUtils.generateSingleUserAuthorizationHeader(
-                requestParameters,
-                HTTP_METHOD_GET,
-                httpRequestBaseURL, TimeUtils.retrieveTimeOffsetToServer(), AuthConfiguration.getInstance());
+                HTTP_METHOD_GET, httpRequestBaseURL, TimeUtils.retrieveTimeOffsetToServer(), AuthConfiguration.getInstance(), requestParameters
+        );
 
         String requestUrl = createRequestURL(httpRequestBaseURL, authorizationHeader);
         URL url = new URL(requestUrl);
