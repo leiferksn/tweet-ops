@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Service contains twitter operations.
+ * Service implementations of twitter operations.
  *
  * Created by leiferksn on 9/4/16.
  *
