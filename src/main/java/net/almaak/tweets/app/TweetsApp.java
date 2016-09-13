@@ -4,19 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Application entry point
+ *
  * Created by leiferksn on 9/1/16.
  */
 
 public class TweetsApp {
 
     public static void main(final String[] args ) {
+
         /**
          * operation = d  (at the moment only delete is allowed)
-         * tweets = list of tweet ids divided by commas.
-         * consumer_key = 'actual consumer'
-         * consumer_secret = 'actual consumer secret'
-         * access_token = 'actual access token'
-         * access_token_secret = 'actual access token secret'
+         * tweet_ids = file containing a list of tweet ids
+         *
          */
 
         Map<String, String> parameters = convertParametetsToHashMap(args);
@@ -32,18 +32,11 @@ public class TweetsApp {
             return false;
         }
 
-        if(!parameters.containsKey("consumer_key")
-                || !parameters.containsKey("consumer_secret")
-                || !parameters.containsKey("access_token")
-                || !parameters.containsKey("access_token_secret")) {
-            return false;
-        }
-
         if (!parameters.get("operation").equalsIgnoreCase("d")) {
             return false;
         }
 
-        if(parameters.get("operation").equalsIgnoreCase("d") && !parameters.containsKey("tweets")){
+        if(parameters.get("operation").equalsIgnoreCase("d") && !parameters.containsKey("tweet_ids")){
             return false;
         }
 
