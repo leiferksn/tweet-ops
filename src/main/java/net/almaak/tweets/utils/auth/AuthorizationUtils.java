@@ -1,5 +1,6 @@
 package net.almaak.tweets.utils.auth;
 
+import net.almaak.tweets.app.conf.AuthConfiguration;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
@@ -37,22 +38,16 @@ public class AuthorizationUtils {
      */
 
     public static String generateSingleUserAuthorizationHeader(
-            final String consumerKey,
-            final String consumerSecret,
-            final String accessToken,
-            final String accessTokenSecret,
             final Map<String, String> requestParameters,
             final String httpMethod,
             final String httpRequestBaseURL,
-            final Long serverTimeOffset) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
+            final Long serverTimeOffset,
+            final AuthConfiguration authConfiguration) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
 
-        Map<String, String> authParameters = createAuthParamaters(consumerKey,
-                consumerSecret,
-                accessToken,
-                accessTokenSecret,
+        Map<String, String> authParameters = createAuthParamaters(
                 requestParameters,
                 httpMethod,
-                httpRequestBaseURL, serverTimeOffset);
+                httpRequestBaseURL, serverTimeOffset, authConfiguration);
 
         StringBuffer headerBuf = new StringBuffer();
         headerBuf.append("OAuth ");
@@ -72,16 +67,14 @@ public class AuthorizationUtils {
     }
 
     private static Map<String, String> createAuthParamaters(
-            final String consumerKey,
-            final String consumerSecret,
-            final String accessToken,
-            final String accessTokenSecret,
             final Map<String, String> requestParameters,
             final String httpMethod,
-            final String httpRequestBaseURL, Long serverTimeOffset) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
+            final String httpRequestBaseURL,
+            final Long serverTimeOffset,
+            final AuthConfiguration authConfiguration) throws NoSuchAlgorithmException, UnsupportedEncodingException, SignatureException, InvalidKeyException {
 
         Map<String, String> authParams = new LinkedHashMap<String, String>();
-        authParams.put("oauth_consumer_key", consumerKey);
+        authParams.put("oauth_consumer_key", authConfiguration.getConsumerKey());
         byte[] randomBytes = new byte[32];
         new Random().nextBytes(randomBytes);
         String nonce = Base64.encodeBase64String(randomBytes);
@@ -90,10 +83,10 @@ public class AuthorizationUtils {
         authParams.put("oauth_signature_method", OAUTH_SIGNATURE_METHOD);
         Calendar cal = Calendar.getInstance();
         authParams.put("oauth_timestamp", Long.toString((cal.getTimeInMillis() + serverTimeOffset)/1000));
-        authParams.put("oauth_token", accessToken);
+        authParams.put("oauth_token", authConfiguration.getAccessToken());
         authParams.put("oauth_version", OAUTH_VERSION);
-        String oauthSignature = createRequestSignature(accessTokenSecret,
-                consumerSecret,
+        String oauthSignature = createRequestSignature(authConfiguration.getAccessTokenSecret(),
+                authConfiguration.getConsumerSecret(),
                 authParams,
                 requestParameters, httpMethod, httpRequestBaseURL);
 

@@ -1,10 +1,10 @@
 package net.almaak.tweets.auth;
 
+import net.almaak.tweets.app.conf.AuthConfiguration;
 import net.almaak.tweets.utils.TimeUtils;
 import net.almaak.tweets.utils.auth.AuthorizationUtils;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -24,10 +24,6 @@ import java.util.Map;
 
 public class AuthorizationUtilsTest {
 
-    private static final String CONSUMER_KEY = "key";
-    private static final String CONSUMER_SECRET = "secret";
-    private static final String ACCESS_TOKEN = "accesskey";
-    private static final String ACCESS_TOKEN_SECRET = "accesssecret";
     private static final String HTTP_METHOD_GET = "GET";
     private static final String CUSTOM_REQUEST_PARAM = "user_id";
     private static final String CUSTOM_REQUEST_PARAM_VALUE = "test";
@@ -42,13 +38,10 @@ public class AuthorizationUtilsTest {
 
     @Test
     public void shouldCreateValidAuthorizationHeader() throws Exception {
-    String authorizationHeader = AuthorizationUtils.generateSingleUserAuthorizationHeader(CONSUMER_KEY,
-            CONSUMER_SECRET,
-            ACCESS_TOKEN,
-            ACCESS_TOKEN_SECRET,
+    String authorizationHeader = AuthorizationUtils.generateSingleUserAuthorizationHeader(
             requestParameters,
             HTTP_METHOD_GET,
-            httpRequestBaseURL, TimeUtils.retrieveTimeOffsetToServer());
+            httpRequestBaseURL, TimeUtils.retrieveTimeOffsetToServer(), AuthConfiguration.getInstance());
 
         Assert.assertNotNull(authorizationHeader);
     }
@@ -72,13 +65,10 @@ public class AuthorizationUtilsTest {
 
     @Test
     public void shouldReturnValidResponseFromTestServer() throws Exception {
-        String authorizationHeader = AuthorizationUtils.generateSingleUserAuthorizationHeader(CONSUMER_KEY,
-                CONSUMER_SECRET,
-                ACCESS_TOKEN,
-                ACCESS_TOKEN_SECRET,
+        String authorizationHeader = AuthorizationUtils.generateSingleUserAuthorizationHeader(
                 requestParameters,
                 HTTP_METHOD_GET,
-                httpRequestBaseURL, TimeUtils.retrieveTimeOffsetToServer());
+                httpRequestBaseURL, TimeUtils.retrieveTimeOffsetToServer(), AuthConfiguration.getInstance());
 
         String requestUrl = createRequestURL(httpRequestBaseURL, authorizationHeader);
         URL url = new URL(requestUrl);
