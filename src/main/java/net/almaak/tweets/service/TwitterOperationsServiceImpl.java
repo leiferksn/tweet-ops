@@ -51,8 +51,11 @@ public class TwitterOperationsServiceImpl implements TwitterOperationsService {
                 urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
                 if(urlConnection.getResponseCode() != 200 && urlConnection.getResponseCode() != 404) {
+                    System.out.println("Something went wrong. Response code: " + urlConnection.getResponseCode() + ". Tweet ID: " + tweetId);
                     success = false;
                     break;
+                } else {
+                    System.out.println("Tweet deleted / not found [ " + urlConnection.getResponseCode() + " ]: " + tweetId + ".");
                 }
             } catch (MalformedURLException mue) {
                 throw new RuntimeException(mue);
