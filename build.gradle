@@ -2,6 +2,19 @@ group 'fun-with-tweets'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "net.almaak.tweets.app.TweetsApp"
+
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
 
 sourceCompatibility = 1.6
 
@@ -13,3 +26,5 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.9'
 }
+
+
