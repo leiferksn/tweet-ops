@@ -13,5 +13,10 @@ Gradle is used for <b>building</b>.
 
 <b>OAuth credentils</b> are stored in a property file, which are loaded into a configuration singleton that is used throughout the whole runtime. 
 
-<b>Execution</b> details are ... coming soon.
+<b>Execution:</b> 
+
+To <b>DELETE</b> tweets:
+
+java -jar tweet-ops-1.0-SNAPSHOT.jar operation=d tweet_ids=/tmp/tweets.txt
+
 
